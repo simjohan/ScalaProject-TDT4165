@@ -21,7 +21,7 @@ class Bank(val allowedAttempts: Integer = 3) {
       transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
   }
 
-  def generateAccountId: Int = ???
+  def generateAccountId: Int = BankIDGenerator.generate();
 
   private def processTransactions: Unit = ???
 
