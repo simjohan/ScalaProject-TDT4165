@@ -33,6 +33,7 @@ class Transaction(val transactionsQueue: TransactionQueue,
                   val allowedAttemps: Int) extends Runnable {
 
   var status: TransactionStatus.Value = TransactionStatus.PENDING
+  var counter = 0
 
   override def run: Unit = {
 
@@ -48,8 +49,11 @@ class Transaction(val transactionsQueue: TransactionQueue,
           processedTransactions push this
         }
         case nsfe: NoSufficientFundsException => {
-          if (allowedAttemps > 0) {
-            transactionsQueue push new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttemps-1)
+          if (counter < allowedAttemps) {
+            println("Unable to perform, adding to queue again")
+            counter += 1
+            transactionsQueue push this
+          } else {
             status = TransactionStatus.FAILED
             processedTransactions push this
           }

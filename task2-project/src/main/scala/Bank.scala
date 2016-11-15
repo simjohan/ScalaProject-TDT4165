@@ -18,9 +18,11 @@ class Bank(val allowedAttempts: Integer = 3) {
   private val executorContext = ExecutionContext.global
 
 
+  Main.thread(processTransactions)
+
+
   def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
     transactionsQueue push new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
-    processTransactions
   }
 
   def generateAccountId: Int = BankIDGenerator.generate()
@@ -29,6 +31,8 @@ class Bank(val allowedAttempts: Integer = 3) {
     if (!(transactionsQueue isEmpty)){
       executorContext execute transactionsQueue.pop
     }
+    Thread.sleep(100)
+    processTransactions
   }
 
   def addAccount(initialBalance: Double): Account = {
