@@ -27,5 +27,4 @@ class Account(initialBalance: Double, val uid: Int = Bank getUniqueId) {
     balance
   }
 
-
 }
