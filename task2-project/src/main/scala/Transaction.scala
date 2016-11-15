@@ -43,6 +43,17 @@ class Transaction(val transactionsQueue: TransactionQueue,
         status = TransactionStatus.SUCCESS
         processedTransactions push this
       } catch {
+        case iae: IllegalAmountException => {
+          status = TransactionStatus.FAILED
+          processedTransactions push this
+        }
+        case nsfe: NoSufficientFundsException => {
+          if (allowedAttemps > 0) {
+            transactionsQueue push new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttemps-1)
+            status = TransactionStatus.FAILED
+            processedTransactions push this
+          }
+        }
         case e: Exception => {
           println(e.getMessage)
           status = TransactionStatus.FAILED

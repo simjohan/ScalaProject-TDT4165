@@ -17,16 +17,18 @@ class Bank(val allowedAttempts: Integer = 3) {
   private val processedTransactions: TransactionQueue = new TransactionQueue()
   private val executorContext = ExecutionContext.global
 
+
   def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
-    transactionsQueue push new Transaction(
-      transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
+    transactionsQueue push new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
     processTransactions
   }
 
   def generateAccountId: Int = BankIDGenerator.generate()
 
   private def processTransactions: Unit = {
-    executorContext execute transactionsQueue.pop
+    if (!(transactionsQueue isEmpty)){
+      executorContext execute transactionsQueue.pop
+    }
   }
 
   def addAccount(initialBalance: Double): Account = {
