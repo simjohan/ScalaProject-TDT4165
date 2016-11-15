@@ -20,12 +20,13 @@ class Bank(val allowedAttempts: Integer = 3) {
   def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
     transactionsQueue push new Transaction(
       transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
+    processTransactions
   }
 
-  def generateAccountId: Int = BankIDGenerator.generate();
+  def generateAccountId: Int = BankIDGenerator.generate()
 
   private def processTransactions: Unit = {
-    
+    executorContext execute transactionsQueue.pop
   }
 
   def addAccount(initialBalance: Double): Account = {

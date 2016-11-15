@@ -37,8 +37,18 @@ class Transaction(val transactionsQueue: TransactionQueue,
   override def run: Unit = {
 
     def doTransaction() = {
-      from withdraw amount
-      to deposit amount
+      try {
+        from withdraw amount
+        to deposit amount
+        status = TransactionStatus.SUCCESS
+        processedTransactions push this
+      } catch {
+        case e: Exception => {
+          println(e.getMessage)
+          status = TransactionStatus.FAILED
+          processedTransactions push this
+        }
+      }
     }
 
     if (from.uid < to.uid) from synchronized {
@@ -51,7 +61,7 @@ class Transaction(val transactionsQueue: TransactionQueue,
       }
     }
 
-    // Extend this method to satisfy new requirements.
+
 
   }
 }
