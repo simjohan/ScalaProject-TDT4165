@@ -4,7 +4,7 @@ class Account(initialBalance: Double, val uid: Int = Bank getUniqueId) {
 
   private var balance = initialBalance
 
-  def withdraw(amount: Double): Unit = {
+  def withdraw(amount: Double): Unit = this.synchronized{
     if(amount > balance) {
       throw new NoSufficientFundsException("Insufficient funds.")
     }
@@ -15,7 +15,7 @@ class Account(initialBalance: Double, val uid: Int = Bank getUniqueId) {
   }
 
 
-  def deposit(amount: Double): Unit = {
+  def deposit(amount: Double): Unit = this.synchronized {
     if(amount <= 0) {
       throw new IllegalAmountException("You must deposit a positive amount.")
     }
