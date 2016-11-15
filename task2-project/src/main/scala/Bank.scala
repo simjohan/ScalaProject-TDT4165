@@ -1,5 +1,6 @@
 import java.util.concurrent.atomic.AtomicInteger
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.forkjoin.ForkJoinPool
 
 object BankIDGenerator {
@@ -14,7 +15,7 @@ class Bank(val allowedAttempts: Integer = 3) {
   private val uid = BankIDGenerator.generate()
   private val transactionsQueue: TransactionQueue = new TransactionQueue()
   private val processedTransactions: TransactionQueue = new TransactionQueue()
-  private val executorContext = ???
+  private val executorContext = ExecutionContext.global
 
   def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
     transactionsQueue push new Transaction(
@@ -23,7 +24,9 @@ class Bank(val allowedAttempts: Integer = 3) {
 
   def generateAccountId: Int = BankIDGenerator.generate();
 
-  private def processTransactions: Unit = ???
+  private def processTransactions: Unit = {
+    
+  }
 
   def addAccount(initialBalance: Double): Account = {
     new Account(this, initialBalance)
