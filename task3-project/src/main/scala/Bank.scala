@@ -61,9 +61,11 @@ class Bank(val bankId: String) extends Actor {
     
     // This method should forward Transaction t to an account or another bank, depending on the "to"-address.
     // HINT: Make use of the variables that have been defined above.
-    if (isInternal) {
+    if (toBankId == bankId) {
+      println(s"Bank $bankId received an internal transaction to $toAccountId")
       BankManager.findAccount(bankId, toAccountId) ! t
     } else {
+      println(s"Bank $bankId received external trans. forwarding to $toBankId (${t.to})")
       BankManager.findBank(toBankId) ! t
     }
 
