@@ -15,7 +15,14 @@ object BankManager {
   }
 
   def findBank(bankId: String): ActorRef = {
-    banks(s"bank$bankId")
+    try {
+      banks(s"bank$bankId")
+    } catch {
+      case e:NoSuchElementException =>
+        println("No such bank")
+        throw e
+    }
+
   }
 
   def createAccount(accountId: String, bankId: String, initialBalance: Double): ActorRef = {

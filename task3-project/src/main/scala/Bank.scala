@@ -66,7 +66,11 @@ class Bank(val bankId: String) extends Actor {
       BankManager.findAccount(bankId, toAccountId) ! t
     } else {
       println(s"Bank $bankId received external trans. forwarding to $toBankId (${t.to})")
-      BankManager.findBank(toBankId) ! t
+      try {
+        BankManager.findBank(toBankId) ! t
+      } catch {
+        case e:NoSuchElementException => throw e
+      }
     }
 
   }

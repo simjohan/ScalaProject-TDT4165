@@ -61,6 +61,8 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
       } catch {
         case _: NoSufficientFundsException | _: IllegalAmountException =>
           t.status = TransactionStatus.FAILED
+        case _: NoSuchElementException  =>
+          println("YOOOO")
       }
     }
     t
