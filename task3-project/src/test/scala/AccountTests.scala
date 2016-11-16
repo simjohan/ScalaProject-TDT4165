@@ -32,6 +32,7 @@ object TestHelper {
       Thread.sleep(500)
       var completedNow = true
       accounts.foreach(a => {
+        //a.getTransactions.foreach(t => println(t.status))
         completedNow = completedNow && a.allTransactionsCompleted
       })
       completed = completedNow
@@ -74,6 +75,7 @@ class Test03 extends FunSuite {
     account1.transferTo(account2.accountId, 200)
 
     TestHelper.waitUntilAllTransactionsAreCompleted(List(account1, account2))
+
     assert(account1.getBalanceAmount == 800 && account2.getBalanceAmount == 1200)
   }
 }

@@ -35,12 +35,21 @@ class Bank(val bankId: String) extends Actor {
     case IdentifyActor => sender ! this
     case t: Transaction => processTransaction(t)
 
+
     case t: TransactionRequestReceipt => {
-      // Forward receipt
-      ???
+      println("Reciept to accountNMBR: "+t.toAccountNumber)
+      val isInternal = t.toAccountNumber.substring(0,4) == bankId
+      val toBankId = t.toAccountNumber.substring(0,4)
+      val toAccountId = t.toAccountNumber.substring(4)
+
+      if (isInternal) {
+        BankManager.findAccount(bankId, toAccountId) ! t
+      } else {
+        BankManager.findBank(toBankId) ! t
+      }
     }
 
-    case msg => ???
+    case msg => println(msg)
   }
 
   def processTransaction(t: Transaction): Unit = {
