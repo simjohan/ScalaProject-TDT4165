@@ -37,10 +37,19 @@ class Bank(val bankId: String) extends Actor {
 
 
     case t: TransactionRequestReceipt => {
-      println("Reciept to accountNMBR: "+t.toAccountNumber)
-      val isInternal = t.toAccountNumber.substring(0,4) == bankId
-      val toBankId = t.toAccountNumber.substring(0,4)
-      val toAccountId = t.toAccountNumber.substring(4)
+      var toBankId: String = ""
+      var isInternal: Boolean = false
+      var toAccountId: String = ""
+
+      if(t.toAccountNumber.length == 4){
+        isInternal = true
+        toBankId = bankId
+        toAccountId = t.toAccountNumber
+      }else{
+        isInternal = t.toAccountNumber.substring(0,4) == bankId
+        toBankId = t.toAccountNumber.substring(0,4)
+        toAccountId = t.toAccountNumber.substring(4)
+      }
 
       if (isInternal) {
         BankManager.findAccount(bankId, toAccountId) ! t
@@ -54,14 +63,23 @@ class Bank(val bankId: String) extends Actor {
 
   def processTransaction(t: Transaction): Unit = {
     implicit val timeout = new Timeout(5 seconds)
-    val isInternal = t.to.length <= 4
-    val toBankId = if (isInternal) bankId else t.to.substring(0, 4)
-    val toAccountId = if (isInternal) t.to else t.to.substring(4)
+    var toBankId: String = ""
+    var isInternal: Boolean = false
+    var toAccountId: String = ""
+
+    if(t.to.length == 4){
+      isInternal = true
+      toBankId = bankId
+      toAccountId = t.to
+    }else{
+      isInternal = t.to.substring(0,4) == bankId
+      toBankId = t.to.substring(0,4)
+      toAccountId = t.to.substring(4)
+    }
     val transactionStatus = t.status
     
-    // This method should forward Transaction t to an account or another bank, depending on the "to"-address.
-    // HINT: Make use of the variables that have been defined above.
-    if (toBankId == bankId) {
+
+    if (isInternal) {
       println(s"Bank $bankId received an internal transaction to $toAccountId")
       BankManager.findAccount(bankId, toAccountId) ! t
     } else {
