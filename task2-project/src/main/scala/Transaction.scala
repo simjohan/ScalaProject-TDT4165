@@ -50,7 +50,6 @@ class Transaction(val transactionsQueue: TransactionQueue,
         }
         case nsfe: NoSufficientFundsException => {
           if (counter < allowedAttemps) {
-            println("Unable to perform, adding to queue again")
             counter += 1
             transactionsQueue push this
           } else {

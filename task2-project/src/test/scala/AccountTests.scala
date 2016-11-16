@@ -201,6 +201,7 @@ class AccountTransferTests extends FunSuite {
 
       if (!(acc2.getBalanceAmount != 300 && acc3.getBalanceAmount == 0)) failed += 1
     }
+    println(failed)
     assert(failed <= 5)
   }
 

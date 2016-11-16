@@ -23,28 +23,36 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
   }
 
   def getTransactions: List[Transaction] = {
-    // Should return a list of all Transaction-objects stored in transactions
-    ???
+    transactions.values.toList
   }
 
   def allTransactionsCompleted: Boolean = {
-    // Should return whether all Transaction-objects in transactions are completed
-    ???
+    transactions.values.exists(t => !t.isCompleted)
   }
 
-  def withdraw(amount: Double): Unit = ??? // Like in part 2
-  def deposit(amount: Double): Unit = ??? // Like in part 2
-  def getBalanceAmount: Double = ??? // Like in part 2
+  def withdraw(amount: Double): Unit = this.synchronized  {
+    if (amount > balance.amount) throw new NoSufficientFundsException("Too poor!")
+    if (amount < 0) throw new IllegalAmountException("Invalid amount (negative).")
+    balance.amount -= amount
+  }
+
+  def deposit(amount: Double): Unit = this.synchronized {
+    if (amount <= 0) throw new IllegalAmountException("Must be positive")
+    balance.amount += amount
+  }
+
+  def getBalanceAmount: Double = {
+    balance.amount
+  }
 
   def sendTransactionToBank(t: Transaction): Unit = {
-    // Should send a message containing t to the bank of this account
-    ???
+    BankManager.findBank(bankId) ! t
   }
 
   def transferTo(accountNumber: String, amount: Double): Transaction = {
 
     val t = new Transaction(from = getFullAddress, to = accountNumber, amount = amount)
-
+    transactions += t.id -> t
     if (reserveTransaction(t)) {
       try {
         withdraw(amount)
@@ -76,7 +84,7 @@ class Account(val accountId: String, val bankId: String, val initialBalance: Dou
       ???
     }
 
-    case BalanceRequest => ??? // Should return current balance
+    case BalanceRequest => getBalanceAmount
 
     case t: Transaction => {
       // Handle incoming transaction
